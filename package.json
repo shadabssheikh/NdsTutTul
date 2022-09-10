@@ -14,6 +14,7 @@
   "author": "Shadab",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.1",
     "express-joi-validation": "^4.x.x",
     "joi": "^14.x.x",

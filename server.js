@@ -1,6 +1,9 @@
 var ServerVap = require("express")
 var ServerVaj = ServerVap()
+var CorsVap = require("cors")
+
 ServerVaj.use(ServerVap.json())
+ServerVaj.use(CorsVap())
 
 var SdbCncVap = require("mysql")
 var SdbCncVaj = SdbCncVap.createConnection({
@@ -17,6 +20,8 @@ SdbCncVaj.connect((ErrSdbVar)=>
         console.log("Sdb Connected")
 
 } )
+
+
 
 
 var JoiVap = require("joi")
@@ -320,60 +325,6 @@ ServerVaj.get("/user",(ReqNdsVar, ResNdsVar) =>
 
 
 
-ServerVaj.post("/product", (ReqNdsVar, ResNdsVar) =>
-{
-    var UsrVar = ReqNdsVar.body
-    var SqlQryVar=`INSERT INTO PrdTbl (TitleCol,DetCol,CostCol) VALUES ("${UsrVar.TitleVak}","${UsrVar.DetVak}","${UsrVar.CostVak}")`
-    SdbCncVaj.query(SqlQryVar, (ErrSdbVar, ResSdbVar)=> 
-    {
-        if(ErrSdbVar) throw ErrSdbVar
-        ResNdsVar.json(ResSdbVar)
-    })
-}) 
-
-ServerVaj.get("/product", (ReqNdsVar, ResNdsVar) =>
-{
-    var SqlQryVar=`SELECT TitleCol,DetCol,CostCol FROM PRDTBL`
-    SdbCncVaj.query(SqlQryVar, (ErrSdbVar, ResSdbVar)=> 
-    {
-        if(ErrSdbVar) throw ErrSdbVar
-        ResNdsVar.json(ResSdbVar)
-    })
-}) 
-
-ServerVaj.get("/product/:UidVak", (ReqNdsVar, ResNdsVar) =>
-{
-    var UidVar = ReqNdsVar.params.UidVak
-    var SqlQryVar=`SELECT TitleCol,DetCol,CostCol FROM PRDTBL WHERE UidCol= "${UidVar}"`
-    SdbCncVaj.query(SqlQryVar, (ErrSdbVar, ResSdbVar)=> 
-    {
-        if(ErrSdbVar) throw ErrSdbVar
-        ResNdsVar.json(ResSdbVar)
-    })
-}) 
-
-ServerVaj.put("/product/:UidVak", (ReqNdsVar, ResNdsVar) =>
-{
-    var UquVar = ReqNdsVar.body
-    var UidVar = ReqNdsVar.params.UidVak
-    var SqlQryVar=`UPDATE prdTbl SET TitleCol = "${UquVar.TitleVak}",DetCol = "${UsrVar.DetVak}",CostCol = "${UsrVar.CostVak}" WHERE UidCol = "${UidVar}";`
-    SdbCncVaj.query(SqlQryVar, (ErrSdbVar, ResSdbVar)=> 
-    {
-        if(ErrSdbVar) throw ErrSdbVar
-        ResNdsVar.json(ResSdbVar)
-    })
-}) 
-
-ServerVaj.delete("/product/:UidVak", (ReqNdsVar, ResNdsVar) =>
-{
-    var UidVar = ReqNdsVar.params.UidVak
-    var SqlQryVar=`DELETE FROM PrdTbl WHERE UidCol = "${UidVar}";`
-    SdbCncVaj.query(SqlQryVar, (ErrSdbVar, ResSdbVar)=> 
-    {
-        if(ErrSdbVar) throw ErrSdbVar
-        ResNdsVar.json(ResSdbVar)
-    })
-}) 
 
 ServerVaj.post("/order", (ReqNdsVar, ResNdsVar) =>
 {
@@ -409,3 +360,73 @@ ServerVaj.get("/order-count/:prduid",(ReqNdsVar, ResNdsVar) =>
         ResNdsVar.json(ResSdbVar[0])
     })
 })
+
+
+
+ServerVaj.post("/product", (ReqNdsVar, ResNdsVar) =>
+{
+    var UsrVar = ReqNdsVar.body
+    var SqlQryVar=`INSERT INTO PrdTbl (TitleCol,DetCol,CostCol) VALUES ("${UsrVar.TtlVak}","${UsrVar.DtlVak}","${UsrVar.CstVak}")`
+    SdbCncVaj.query(SqlQryVar, (ErrSdbVar, ResSdbVar)=> 
+    {
+        if(ErrSdbVar) throw ErrSdbVar
+        ResNdsVar.json(ResSdbVar)
+    })
+}) 
+
+ServerVaj.get("/product", (ReqNdsVar, ResNdsVar) =>
+{
+    var SqlQryVar=`SELECT UidCol,TitleCol,DetCol,CostCol FROM PRDTBL`
+    SdbCncVaj.query(SqlQryVar, (ErrSdbVar, ResSdbVar)=> 
+    {
+        if(ErrSdbVar) throw ErrSdbVar
+        ResSdbVar = ResSdbVar.map(ItmVar => 
+            {
+                ItmVar.UidVak = ItmVar.UidCol
+                ItmVar.TtlVak = ItmVar.TitleCol
+                ItmVar.DtlVak = ItmVar.DetCol
+                ItmVar.CstVak = ItmVar.CostCol
+                delete ItmVar.UidCol
+                delete ItmVar.TitleCol
+                delete ItmVar.DetCol
+                delete ItmVar.CostCol
+                return ItmVar
+
+            })
+        ResNdsVar.json(ResSdbVar)
+    })
+}) 
+
+ServerVaj.get("/product/:UidVak", (ReqNdsVar, ResNdsVar) =>
+{
+    var UidVar = ReqNdsVar.params.UidVak
+    var SqlQryVar=`SELECT TitleCol,DetCol,CostCol FROM PRDTBL WHERE UidCol= "${UidVar}"`
+    SdbCncVaj.query(SqlQryVar, (ErrSdbVar, ResSdbVar)=> 
+    {
+        if(ErrSdbVar) throw ErrSdbVar
+        ResNdsVar.json(ResSdbVar)
+    })
+}) 
+
+ServerVaj.put("/product/:UidVak", (ReqNdsVar, ResNdsVar) =>
+{
+    var UquVar = ReqNdsVar.body
+    var UidVar = ReqNdsVar.params.UidVak
+    var SqlQryVar=`UPDATE prdTbl SET TitleCol = "${UquVar.TtlVak}",DetCol = "${UquVar.DtlVak}",CostCol = "${UquVar.CstVak}" WHERE UidCol = "${UidVar}";`
+    SdbCncVaj.query(SqlQryVar, (ErrSdbVar, ResSdbVar)=> 
+    {
+        if(ErrSdbVar) throw ErrSdbVar
+        ResNdsVar.json(ResSdbVar)
+    })
+}) 
+
+ServerVaj.delete("/product/:UidVak", (ReqNdsVar, ResNdsVar) =>
+{
+    var UidVar = ReqNdsVar.params.UidVak
+    var SqlQryVar=`DELETE FROM PrdTbl WHERE UidCol = "${UidVar}";`
+    SdbCncVaj.query(SqlQryVar, (ErrSdbVar, ResSdbVar)=> 
+    {
+        if(ErrSdbVar) throw ErrSdbVar
+        ResNdsVar.json(ResSdbVar)
+    })
+}) 
